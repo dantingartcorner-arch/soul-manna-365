@@ -1,0 +1,24 @@
+name: Generate Today Verse
+
+on:
+  schedule:
+    - cron: '55 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Generate today.json
+        run: python3 scripts/generate_today.py
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/today.json
+          git diff --staged --quiet || git commit -m "Update today.json $(date +%Y-%m-%d)"
+          git push
